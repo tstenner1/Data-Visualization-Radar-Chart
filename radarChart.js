@@ -249,5 +249,46 @@ function RadarChart(id, data, options) {
             }
         });
     }//wrap	
+function cellover(d) {
+			//Dim all blobs
+			d3.selectAll(".radarArea")
+				.transition().duration(200)
+				.style("fill-opacity", 0.1); 
+			//Bring back the hovered over blob
+			d3.select("." + data[d][0][areaName].replace(/\s+/g, ''))
+				.transition().duration(200)
+				.style("fill-opacity", 0.7);	
+	}
 
+	// on mouseout for the legend symbol
+	function cellout() {
+		//Bring back all blobs
+		d3.selectAll(".radarArea")
+			.transition().duration(200)
+			.style("fill-opacity", cfg.opacityArea);
+	}
+
+	/////////////////////////////////////////////////////////
+	/////////////////// Draw the Legend /////////////////////
+	/////////////////////////////////////////////////////////
+
+	svg.append("g")
+  	.attr("class", "legendOrdinal")
+  	.attr("transform", "translate(" + cfg["legendPosition"]["x"] + "," + cfg["legendPosition"]["y"] + ")");
+
+	var legendOrdinal = d3.legend.color()
+  //d3 symbol creates a path-string, for example
+  //"M0,-8.059274488676564L9.306048591020996,
+  //8.059274488676564 -9.306048591020996,8.059274488676564Z"
+  	.shape("path", d3.svg.symbol().type("triangle-up").size(150)())
+  	.shapePadding(10)
+  	.scale(cfg.color)
+  	.labels(cfg.color.domain().map(function(d){
+  		return data[d][0][areaName];
+  	}))
+  	.on("cellover", function(d){ cellover(d); })
+  	.on("cellout", function(d) { cellout(); });
+
+svg.select(".legendOrdinal")
+  .call(legendOrdinal);
 }//RadarChart
